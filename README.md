@@ -87,6 +87,26 @@ Ansible-Mastery/
 - **Ansible_batch/**: Contains batch scripts, playbooks, roles, and inventory files.
 - **examples/**: Contains example playbooks demonstrating various Ansible functionalities.
 
+## Configuration
+
+Here is an example `ansible.cfg` file for configuring Ansible:
+
+```ini
+[defaults]
+inventory= ./inventory
+roles_path= ./roles
+collections_path= ./mycollections:~/.ansible/collections:/usr/share/ansible/collections
+remote_user= root
+ask_pass= false
+
+[privilege_escalation]
+become= true
+become_method= sudo
+become_user= root
+become_ask_pass= false
+- **Ansible_batch/**: Contains batch scripts, playbooks, roles, and inventory files.
+- **examples/**: Contains example playbooks demonstrating various Ansible functionalities.
+
 ## Contributing
 
 We welcome contributions to the Ansible Mastery series! To contribute, please follow these steps:
