@@ -104,6 +104,8 @@ become= true
 become_method= sudo
 become_user= root
 become_ask_pass= false
+
+```
 - **Ansible_batch/**: Contains batch scripts, playbooks, roles, and inventory files.
 - **examples/**: Contains example playbooks demonstrating various Ansible functionalities.
 
