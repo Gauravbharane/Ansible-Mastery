@@ -1,0 +1,44 @@
+# ============================================================
+#  DICTIONARY IN ANSIBLE
+# ============================================================
+# The key is the name of the item, and the value is the item itself.
+
+# About dictionary:
+# A dictionary is a collection of key-value pairs, where each key is unique and maps to a specific value.
+# Dictionaries are commonly used in Ansible playbooks to store and manage structured data.
+
+# Example:
+my_dict:
+  user: value1
+  key2: value2
+  key3:
+    subkey1: subvalue1
+    subkey2: subvalue2
+
+# Accessing a specific value in the dictionary
+- name: Access subvalue1
+  ansible.builtin.debug:
+    msg: "{{ my_dict['key3']['subkey1'] }}"
+
+# Iterating over all key-value pairs in the dictionary
+- name: Print all values
+  debug:
+    msg: "{{ item.key }}: {{ item.value }}"
+  loop: "{{ my_dict | dict2items }}"
+
+# Note:
+# - dict2items is a filter plugin that converts a dictionary into a list of key-value pairs.
+# - For example, the dictionary {key1: value1, key2: value2, key3: value3} would be converted to:
+#   - key: key1
+#     value: value1
+#   - key: key2
+#     value: value2
+#   - key: key3
+#     value: value3
+# - Use Case: Iterating over key-value pairs in a dictionary.
+
+
+
+# ============================================
+# Created by: Gaurav Bharane
+# ============================================

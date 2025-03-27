@@ -1,0 +1,165 @@
+# ============================================
+# Ansible 'when' Statement Documentation and Examples
+# ============================================
+# The 'when' statement in Ansible is used to control task execution based on conditions.
+# It allows you to specify a condition that must evaluate to true for the task to run.
+# Conditions can be based on variables, facts, logical operators, comparisons, or registered results.
+
+# Supported Operators:
+# - `==`: Equal to
+# - `!=`: Not equal to
+# - `<`: Less than
+# - `<=`: Less than or equal to
+# - `>`: Greater than
+# - `>=`: Greater than or equal to
+# - `and`: Logical AND
+# - `or`: Logical OR
+# - `not`: Logical NOT
+# - `in`: Membership test
+# - `not in`: Membership exclusion
+# - `is`: Identity test
+# - `is not`: Negated identity test
+
+# Examples:
+# - `when: my_var == 42` (Checks if `my_var` equals 42)
+# - `when: my_var != 10` (Checks if `my_var` is not equal to 10)
+# - `when: my_var > 5 and my_var < 15` (Checks if `my_var` is between 5 and 15)
+# - `when: my_item in my_list` (Checks if `my_item` exists in `my_list`)
+# - `when: my_var is not none` (Checks if `my_var` is not None)
+
+
+
+# Example Playbook with 'when' Conditions
+- name: Ansible 'when' Statement Examples
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+
+    # Example 1: Basic 'when' syntax
+    - name: Run task only if condition is met
+      debug:
+        msg: "This task runs because the condition is met"
+      vars:
+        some_condition: true
+      when: some_condition
+
+    # Example 2: Using 'when' with a variable
+    - name: Run task only if variable is true
+      debug:
+        msg: "This task runs because my_var is true"
+      vars:
+        my_var: true
+      when: my_var
+      #explanation
+      #The when clause evaluates the condition provided. In this case, it checks the value of my_var. Since my_var is a boolean, it directly evaluates to true or false.
+      #If my_var is true, the task will run.
+      #If my_var is false (or evaluates to false), the task will be skipped.
+      
+#=======================================================================================================
+      #Note:-
+      #Ansible automatically interprets certain values as booleans:
+      #true, True, yes, Yes, on, On, and 1 are treated as true.
+      #false, False, no, No, off, Off, and 0 are treated as false.
+#=======================================================================================================
+
+
+
+    # Example 3: Using 'when' with comparison operators
+    - name: Run task if variable equals a specific value
+      debug:
+        msg: "This task runs because my_var equals 42"
+      vars:
+        my_var: 42
+      when: my_var == 42
+
+    - name: Run task if variable is greater than a value
+      debug:
+        msg: "This task runs because my_var is greater than 10"
+      vars:
+        my_var: 15
+      when: my_var > 10
+
+    - name: Run task if variable is less than or equal to a value
+      debug:
+        msg: "This task runs because my_var is less than or equal to 20"
+      vars:
+        my_var: 20
+      when: my_var <= 20
+
+    # Example 4: Using 'when' with logical operators
+    - name: Run task if both conditions are true
+      debug:
+        msg: "Both conditions are true"
+      vars:
+        condition1: true
+        condition2: true
+      when: condition1 and condition2
+
+    - name: Run task if at least one condition is true
+      debug:
+        msg: "At least one condition is true"
+      vars:
+        condition1: false
+        condition2: true
+      when: condition1 or condition2
+
+    - name: Run task if condition is false
+      debug:
+        msg: "Condition is false"
+      vars:
+        condition: false
+      when: not condition
+
+    # Example 5: Using 'when' with membership operators
+    - name: Run task if item is in list
+      debug:
+        msg: "Item is in the list"
+      vars:
+        my_list: [1, 2, 3]
+        my_item: 2
+      when: my_item in my_list
+      #explanation
+      #The 'when' statement checks if the value of 'my_item' 
+      #is present in the list 'my_list'. If the condition is true, 
+      #the task will run.
+      #In this case, the task will run because the value 2 is present
+      # in the list [1, 2, 3].
+      
+
+    - name: Run task if item is not in list
+      debug:
+        msg: "Item is not in the list"
+      vars:
+        my_list: [1, 2, 3]
+        my_item: 4
+      when: my_item not in my_list
+
+    # Example 6: Using 'when' with identity operators
+    - name: Run task if variable is None
+      debug:
+        msg: "Variable is None"
+      vars:
+        my_var: null
+      when: my_var is none
+
+    - name: Run task if variable is not None
+      debug:
+        msg: "Variable is not None"
+      vars:
+        my_var: "value"
+      when: my_var is not none
+
+    # Example 7: Using 'when' with facts
+    - name: Run task only on a specific OS
+      debug:
+        msg: "This task runs on Ubuntu"
+      when: ansible_facts['os_family'] == "Debian"
+
+    # Example 8: Using 'when' with registered variables
+    - name: Run task based on registered variable
+      shell: "echo 'Hello, World!'"
+      register: result
+    - name: Check registered variable
+      debug:
+        msg: "Command succeeded"
+      when: result.rc == 0

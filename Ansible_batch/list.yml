@@ -1,0 +1,38 @@
+# ============================================================
+#  LIST IN ANSIBLE
+# ============================================================
+# About list:
+# A list is an ordered collection of items, where each item can be of any data type.
+# Lists are commonly used in Ansible playbooks to store and manage sequences of data.
+# Items in a list are accessed using their index, starting from 0.
+
+# Syntax for a list:
+# A list is an ordered collection of items.
+# Example:
+---
+  - name: Example playbook for lists
+    hosts: all
+    vars: 
+      my_list:
+        - item1  #0       
+        - item2   #1 
+        # Nested list       
+        - item3:       #2 
+            - subitem1         
+            - subitem2
+        - item4:
+            - subitem3
+            - subitem4
+
+    tasks:
+      - name: Access subitem1
+        debug:
+          msg: "{{ my_list[2]['subitem1'] }}"
+      
+      - name: Print all items
+        debug:
+          msg: "{{ item }}"
+        loop: "{{ my_list }}"
+# Ansible provides several ways to work with lists, including accessing individual items, iterating over all items, and nesting lists within lists. 
+# This example demonstrates how to access a specific item in a list and iterate over all items in a list using Ansible playbooks.
+

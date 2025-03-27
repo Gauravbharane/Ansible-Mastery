@@ -1,0 +1,208 @@
+---
+# Ansible Playbook demonstrating all types of loops
+
+- name: Demonstrate Ansible loops
+  hosts: localhost
+  tasks:
+
+    # 1. Simple Loop
+    - name: Simple loop example
+      debug:
+        msg: "Item: {{ item }}"
+      loop:
+        - one
+        - two
+        - three
+      # Use Case: Iterating over a list of items.
+
+
+
+
+    # 2. Loop with Index
+    - name: Loop with index example
+      debug:
+        msg: "Index: {{ item.0 }}, Value: {{ item.1 }}"
+      with_indexed_items:
+        - apple
+        - banana
+        - cherry
+      # Use Case: Accessing both index and value in a loop.
+
+
+
+
+    # 3. Looping over Dictionaries
+    - name: Loop over dictionary example
+      debug:
+        msg: "Key: {{ item.key }}, Value: {{ item.value }}"
+      loop: "{{ my_dict | dict2items }}"
+      vars:
+        my_dict:
+          key1: value1
+          key2: value2
+          key3: value3
+
+          
+          # explaination
+          # dict2items is a filter plugin that converts a dictionary into a list of key-value pairs.
+          # For example, the dictionary {key1: value1, key2: value2, key3: value3} would be converted to:
+          # - key: key1
+          #   value: value1
+          # - key: key2
+          #   value: value2
+          # - key: key3
+          #   value: value3
+          # Use Case: Iterating over key-value pairs in a dictionary.
+
+
+
+
+    # 4. Nested Loops
+    - name: Nested loop example
+      file:
+        content: "Outer elements: {{ item.1 }}, Inner elements: {{ item.1 }}"
+        dest:my.txt
+      with_nested:
+            
+        - [1, 2, 3]   #01\
+        - ['a', 'b', 'c']    #1
+        # i want to print b element
+        [1][1]
+
+
+            #0 #1 #2
+      # Use Case: Iterating over combinations of two lists.
+
+
+
+
+
+
+
+      
+
+    # 5. Loop with Range
+    - name: Loop with range example
+      debug:
+        msg: "Number: {{ item }}"
+      loop: "{{ range(1, 6) }}"
+      # Use Case: Iterating over a range of numbers.
+
+    # 6. Loop with Files
+    - name: Loop over files in a directory
+      debug:
+        msg: "File: {{ item }}"
+      with_fileglob: "/path/to/cars/*.txt"
+        # Use Case: Processing car-related files in a directory.
+
+          # 7. Loop with Subelements
+    - name: Loop with subelements example
+      debug:
+          msg: "Car: {{ item.0.name }}, Model: {{ item.1 }}"
+          output  Car: BMW , Model: X5
+      with_subelements:
+        - cars:
+          - name: BMW   #0
+            models: [X5, X3]   #1
+          - name: Tesla
+            models: [Model S, Model 3]
+        - models
+        # Use Case: Iterating over nested car structures.
+
+
+
+    # 8. Loop with Conditional Filtering
+    - name: Loop with conditional filtering
+      debug:
+        msg: "Even number: {{ item }}"
+      loop: "{{ my_numbers }}"
+      when: item % 2 == 0
+      vars:
+        my_numbers: [1, 2, 3, 4, 5, 6]
+      # Use Case: Filtering items during iteration.
+
+
+
+    # 9. Loop with Tasks (Block Loop)
+    - name: Block loop example
+      block:
+        - name: Task inside block
+          debug:
+            msg: "Processing {{ item }}"
+      loop:
+        - task1
+        - task2
+        - task3
+      # Use Case: Repeating a block of tasks for each item.
+
+- name: Users exist and are in the correct groups
+  user:
+    name: "{{ item['name'] }}"
+    state: present
+    groups: "{{ item['groups'] }}"
+  loop:
+    - name: jane
+      groups: wheel
+    - name: joe
+      groups: root
+
+
+
+    # 10. Loop with Ansible Roles
+    - name: Loop with roles example
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - role1
+        - role2
+        - role3
+      # Use Case: Applying roles dynamically.
+
+#
+# 11. Multi-loop
+- name: Multi-loop 
+  debug:
+    msg: "Outer: {{ item.0 }}, Inner: {{ item.1 }}"
+  with_nested:
+    - "{{ outer_list }}"
+    - "{{ inner_list }}"
+  vars:
+    outer_list:
+      - alpha
+      - beta
+    inner_list:
+      - 1
+      - 2
+      - 3
+
+
+      #ansible-playbook example.yml
+
+      
+  # Use Case: Iterating over multiple lists in a single module.
+  #output
+  # TASK [Multi-loop]
+  # ok: [localhost] => (item=['alpha', 1]) => {
+  #     "msg": "Outer: alpha, Inner: 1"
+  # }
+  # ok: [localhost] => (item=['alpha', 2]) => {
+  #     "msg": "Outer: alpha, Inner: 2"
+  # }
+  # ok: [localhost] => (item=['alpha', 3]) => {
+#     "msg": "Outer: alpha, Inner: 3"
+# }
+# ok: [localhost] => (item=['beta', 1]) => {
+#     "msg": "Outer: beta, Inner: 1"
+# }
+# ok: [localhost] => (item=['beta', 2]) => {
+#     "msg": "Outer: beta, Inner: 2"
+# }
+# ok: [localhost] => (item=['beta', 3]) => {
+#     "msg": "Outer: beta, Inner: 3"
+# }
+#
+
+
+# ============================================
+# Created by: Gaurav Bharane
+# ============================================

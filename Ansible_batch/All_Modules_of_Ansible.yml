@@ -1,0 +1,444 @@
+# Example of different Ansible modules
+# ============================================
+# Ansible Modules: Overview and Examples
+# ============================================
+
+# Ansible modules are reusable, standalone scripts that automate specific tasks in IT environments. 
+# They are the building blocks of Ansible playbooks, enabling users to manage systems, deploy applications, 
+# and orchestrate complex workflows. Each module is designed to perform a specific function, such as 
+# managing files, services, packages, or cloud resources. Below is a categorized list of commonly used 
+# Ansible modules with examples to demonstrate their usage.
+# ============================================
+# Created by: Gaurav Bharane
+# ============================================
+# Index of Ansible Modules in this File
+
+# File module
+# Copy module
+# Command module
+# Shell module
+# Yum module
+# Apt module
+# Service module
+# User module
+# Group module
+# Debug module
+# Template module
+# Firewall module
+# SELinux module
+# Cron module
+# Mount module
+# Lineinfile module
+# Sysctl module
+# LVM module
+# Swap module
+# Archive module
+# Unarchive module
+# Git module
+# Fetch module
+# Wait_for module
+# Synchronize module
+# UFW module
+# Firewalld module
+# Host module
+# Set_fact module
+# Pause module
+# Stat module
+# Replace module
+# Blockinfile module
+# Assemble module
+# Wait_for_connection module
+# Script module
+# Debug module with verbosity
+# Ping module
+# Setup module
+# Docker module
+# Kubernetes module
+# AWS S3 module
+# Azure Resource Manager module
+# GCP Compute Engine module
+# Terraform module
+# Vault module
+# Kubernetes Helm module
+# OpenStack module
+
+
+# Syntax for using Ansible modules
+# ============================================
+
+# General syntax for Ansible modules:
+# - name: <Description of the task>
+#   <module_name>:
+#     <module_parameters>
+
+
+
+# File module
+- name: Create a file
+  ansible.builtin.file:
+    path: /tmp/example.txt
+    state: touch
+
+# Copy module
+- name: Copy a file
+  ansible.builtin.copy:
+    src: /path/to/source/file
+    dest: /path/to/destination/file
+
+# Command module
+- name: Run a command
+  ansible.builtin.command:
+    cmd: echo "Hello, World!"
+
+# Shell module
+- name: Run a shell command
+  ansible.builtin.shell:
+    cmd: "ls -l /tmp"
+
+# Yum module (for package management)
+- name: Install a package
+  ansible.builtin.yum:
+    name: httpd
+    state: present
+
+# Apt module (for package management)
+- name: Install a package
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+# Service module
+- name: Start a service
+  ansible.builtin.service:
+    name: httpd
+    state: started
+
+# User module
+- name: Create a user
+  ansible.builtin.user:
+    name: example_user
+    state: present
+
+# Group module
+- name: Create a group
+  ansible.builtin.group:
+    name: example_group
+    state: present
+
+# Debug module
+- name: Print a debug message
+  ansible.builtin.debug:
+    msg: "This is a debug message"
+
+# Template module
+- name: Deploy a template
+  ansible.builtin.template:
+    src: /path/to/template.j2
+    dest: /path/to/destination/file
+
+# RHCE Administration Modules
+
+# Firewall module
+- name: Manage firewall rules
+  ansible.builtin.firewalld:
+    zone: public
+    service: ssh
+    state: enabled
+    permanent: yes
+
+# SELinux module
+- name: Ensure SELinux is enforcing
+  ansible.builtin.selinux:
+    state: enforcing
+
+# User module
+- name: Manage users
+  ansible.builtin.user:
+    name: admin_user
+    state: present
+    groups: wheel
+
+# Group module
+- name: Manage groups
+  ansible.builtin.group:
+    name: admin_group
+    state: present
+
+
+# Service module
+- name: Ensure a service is running
+  ansible.builtin.service:
+    name: sshd
+    state: started
+
+# Cron module
+- name: Schedule a cron job
+  ansible.builtin.cron:
+    name: "backup job"
+    minute: "0"
+    hour: "2"
+    job: "/usr/local/bin/backup.sh"
+
+# Mount module
+- name: Mount a filesystem
+  ansible.builtin.mount:
+    path: /mnt/data
+    src: /dev/sdb1
+    fstype: xfs
+    state: mounted
+
+# Lineinfile module
+- name: Add a configuration line
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    line: "net.ipv4.ip_forward=1"
+
+# Sysctl module
+- name: Apply kernel parameter changes
+  ansible.builtin.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+
+# LVM module
+- name: Create a logical volume
+  community.general.lvol:
+    vg: my_vg
+    lv: my_lv
+    size: 10G
+    state: present
+
+# Swap module
+- name: Create a swap file
+  ansible.builtin.command:
+    cmd: |
+      dd if=/dev/zero of=/swapfile bs=1M count=1024
+      mkswap /swapfile
+      chmod 600 /swapfile
+  args:
+    creates: /swapfile
+
+- name: Enable swap
+  ansible.builtin.command:
+    cmd: swapon /swapfile
+  args:
+    creates: /proc/swaps
+
+- name: Ensure swap is persistent
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "/swapfile none swap sw 0 0"
+    state: present
+
+
+# Archive module
+- name: Compress files into a tar.gz archive
+  ansible.builtin.archive:
+    path: /path/to/files/
+    dest: /path/to/archive.tar.gz
+
+# Unarchive module
+- name: Extract files from a tar.gz archive
+  ansible.builtin.unarchive:
+    src: /path/to/archive.tar.gz
+    dest: /path/to/extracted/
+    remote_src: yes
+
+
+
+# Git module
+- name: Clone a Git repository
+  ansible.builtin.git:
+    repo: https://github.com/example/repo.git
+    dest: /path/to/clone
+
+# Fetch module
+- name: Fetch a file from remote
+  ansible.builtin.fetch:
+    src: /remote/path/to/file
+    dest: /local/path/to/file
+
+
+
+# Wait_for module
+- name: Wait for a port to be open
+  ansible.builtin.wait_for:
+    port: 22
+    host: 127.0.0.1
+    timeout: 30
+
+
+
+# Synchronize module
+- name: Synchronize directories
+  ansible.builtin.synchronize:
+    src: /local/path/
+    dest: /remote/path/
+    mode: push
+
+# UFW module
+- name: Allow SSH through UFW
+  ansible.builtin.ufw:
+    rule: allow
+    port: 22
+    proto: tcp
+
+
+# Firewalld module
+- name: Open a port in firewalld
+  ansible.builtin.firewalld:
+    port: 8080/tcp
+    permanent: yes
+    state: enabled
+
+# Host module
+- name: Add an entry to /etc/hosts
+  ansible.builtin.hosts:
+    name: example.com
+    ip: 192.168.1.100
+
+# Set_fact module
+- name: Set a custom fact
+  ansible.builtin.set_fact:
+    my_custom_fact: "custom_value"
+
+# Pause module
+- name: Pause for 10 seconds
+  ansible.builtin.pause:
+    seconds: 10
+
+#
+# Stat module
+- name: Get file or directory status
+  ansible.builtin.stat:
+    path: /path/to/file_or_directory
+  register: file_status
+
+# Replace module
+- name: Replace text in a file
+  ansible.builtin.replace:
+    path: /path/to/file
+    regexp: 'old_text'
+    replace: 'new_text'
+
+# Blockinfile module
+- name: Insert/update a block of text in a file
+  ansible.builtin.blockinfile:
+    path: /etc/example.conf
+    block: |
+      [example_section]
+      example_key=example_value
+
+# Assemble module
+- name: Assemble multiple files into one
+  ansible.builtin.assemble:
+    src: /path/to/source/files/
+    dest: /path/to/destination/file
+
+# Wait_for_connection module
+- name: Wait for a host to be reachable
+  ansible.builtin.wait_for_connection:
+    timeout: 60
+
+# Script module
+- name: Run a local script on remote hosts
+  ansible.builtin.script:
+    script: /path/to/local/script.sh
+
+
+# Debug module with verbosity
+- name: Debug with verbosity
+  ansible.builtin.debug:
+    msg: "This is a verbose debug message"
+    verbosity: 2
+
+# Ping module
+- name: Test connectivity to hosts
+  ansible.builtin.ping:
+
+# Setup module
+- name: Gather facts about remote hosts
+  ansible.builtin.setup:
+    filter: "ansible_*"
+
+
+#
+# Docker module
+- name: Manage a Docker container
+  community.docker.docker_container:
+    name: my_container
+    image: nginx
+    state: started
+
+# Kubernetes module
+- name: Apply a Kubernetes manifest
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: example-pod
+      spec:
+        containers:
+        - name: example-container
+          image: nginx
+
+# AWS S3 module
+- name: Upload a file to S3
+  amazon.aws.s3:
+    bucket: my-bucket
+    object: /path/to/s3/object
+    src: /path/to/local/file
+    mode: put
+
+# Azure Resource Manager module
+- name: Create a resource group in Azure
+  azure.azcollection.azure_rm_resourcegroup:
+    name: myResourceGroup
+    location: eastus
+
+# GCP Compute Engine module
+- name: Create a GCP instance
+  google.cloud.gcp_compute_instance:
+    name: my-instance
+    machine_type: n1-standard-1
+    zone: us-central1-a
+    disks:
+      - auto_delete: true
+        boot: true
+        source: my-disk
+
+# Terraform module
+- name: Apply Terraform configuration
+  community.general.terraform:
+    project_path: /path/to/terraform/config
+    state: present
+
+# Vault module
+- name: Read a secret from Vault
+  community.hashi_vault.hashi_vault:
+    secret: secret/data/my-secret
+    token: "{{ vault_token }}"
+    url: "{{ vault_url }}"
+
+# Kubernetes Helm module
+- name: Install a Helm chart
+  community.kubernetes.helm:
+    name: my-release
+    chart_ref: stable/nginx
+    namespace: default
+    state: present
+
+# OpenStack module
+- name: Create an OpenStack server
+  openstack.cloud.server:
+    name: my-server
+    image: ubuntu-20.04
+    flavor: m1.small
+    network: my-network
+
+
+# ============================================
+# Created by: Gaurav Bharane
+# ============================================

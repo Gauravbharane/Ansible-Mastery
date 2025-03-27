@@ -1,0 +1,247 @@
+# This Ansible playbook defines various types of variables that can be used in Ansible.
+
+# 
+# Variable Types:
+# 1. Playbook Variables: Defined within the playbook itself.
+# 2. Inventory Variables: Defined in the inventory file.
+# 3. Host Variables: Specific to a particular host.
+# 4. Group Variables: Specific to a group of hosts.
+# 5. Role Variables: Defined within a role.
+# 6. Extra Variables: Passed at runtime using the `-e` flag.
+# 7. Facts: Gathered automatically by Ansible from the managed nodes.
+
+# Each type of variable has its own precedence and scope, which determines how and where it can be used.
+
+#example 1 of vars file
+
+#
+- name: Example playbook for playbook variables
+  hosts: all
+  vars:
+   user_name: "testuser"
+   my_message: "user has been created"
+  tasks:
+    - user:
+        name: "{{ user_name }}" 
+        state: present
+
+    - name: Print message
+      debug:
+        msg: "{{ message }}"
+      
+
+
+
+
+#example 2 of vars file
+---
+- name: Example playbook for multiple variables
+  hosts: all
+  vars:
+    greeting: "Hello"
+    name: "World"
+  tasks:
+    - name: Print greeting message
+      debug:
+        msg: "{{ greeting }}, {{ name }}!"
+
+
+
+
+#example 3 of vars file
+- name: Example playbook for user creation
+  hosts: all
+  vars:
+    username: "testuser"
+    password: "password123"
+  tasks:
+    - name: Create a new user
+      user:
+        name: "{{ username }}"
+        password: "{{ password | password_hash('sha512') }}"
+        state: present
+
+
+#example 4 of loop vars 
+---
+- name: Example playbook for loop variables
+  hosts: all
+  vars:
+    fruits:
+      - apple
+      - banana
+      - orange
+  tasks:
+    - name: Print fruits
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ fruits }}"
+
+
+
+
+#example 5 of inventory host vars
+# Step 1: Define inventory file with host variables
+# Create a file named `inventory` with the following content:
+
+
+[rhce]
+servera ansible_host=192.168.1.10 http_port=80 user=joe
+web2 ansible_host=192.168.1.11 http_port=8080  
+
+-------------------------------------------------
+# host_vars
+mkdir host_vars/
+vim host_vars/servera
+
+ansible_host=192.168.1.10 http_port=80 user=joe
+
+-------------------------------------------------
+
+#group_vars
+mkdir group_vars/
+vim group_vars/rhce
+
+
+
+
+
+
+# Step 2: Create a playbook to use host variables
+
+---
+- name: Example playbook for host variables
+  hosts: web
+  tasks:
+    - name: Print host variables
+      debug:
+        msg: "Host: {{ inventory_hostname }}, IP: {{ ansible_host }}, Port: {{ http_port }}"
+
+
+
+
+
+#task varaible
+---
+- name: Example playbook for task variables
+  hosts: all
+  tasks:
+    - name: Print a custom message
+      vars:
+        custom_message: "This is a task-specific variable Students"
+      debug:
+        msg: "{{ custom_message }}"
+
+
+#
+#example 6 of extra vars
+# Step 1: Run the playbook with extra variables
+# Use the following command to pass extra variables at runtime:
+# ansible-playbook extra_vars_example.yml -e "username=admin password=admin123"
+
+- name: Example playbook for extra variables
+  hosts: all
+  tasks:
+    - name: Print extra variables
+      debug:
+        msg: "Username: {{ username }}, Password: {{ password }}"
+
+# Step 2: Explanation
+# Extra variables are passed at runtime using the `-e` flag. These variables have the highest precedence
+# and can override other variable types. In this example, the `username` and `password` variables are
+# passed as extra variables when running the playbook.
+
+
+#example 7 of dictionary and list usage
+---
+- name: Example playbook for dictionary and list
+  hosts: all
+  vars:
+    # Defining a dictionary
+    user_info:
+      name: "john_doe"
+      uid: 1001
+      shell: "/bin/bash"
+    
+    # Defining a list
+    packages:
+      - vim
+      - git
+      - curl
+  tasks:
+    - name: Print user information
+      debug:
+        msg: "User: {{ user_info.name }}, UID: {{ user_info.uid }}, Shell: {{ user_info.shell }}"
+
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"
+
+# Explanation:
+# Dictionaries and lists are common data structures used in Ansible playbooks to store and manage structured data.
+# In this example, a dictionary named `user_info` and a list named `packages` are defined as variables.
+# The playbook then prints the user information from the dictionary and installs the packages listed in the
+# `packages` variable using a loop.
+# The `{{ variable_name.key }}` syntax is used to access dictionary values, and the `{{ item }}` syntax is used
+# to iterate over the list of packages.
+# This demonstrates how dictionaries and lists can be used in Ansible playbooks to manage structured data.
+
+
+
+#example 8 of nested dictionaries and lists
+---
+- name: Example playbook for nested dictionaries and lists
+  hosts: all
+  vars:
+    # Nested dictionary
+    fruit_details:
+      apple:
+        color: "red"
+        taste: "sweet"
+      banana:
+        color: "yellow"
+        taste: "sweet"
+      grape:
+        color: "purple"
+        taste: "tart"
+        
+    
+    # List of fruits
+    fruits:
+      - apple
+      - banana
+      - grape
+  tasks:
+    - name: Print fruit details
+      debug:
+        msg: "{{ item }} is {{ fruit_details[item].color }} and tastes {{ fruit_details[item].taste }}"
+      loop: "{{ fruits }}"
+
+
+
+
+      # Syntax for a list:
+      # A list is an ordered collection of items.
+      # Example:
+      my_list:
+        - item1         
+        - item2         
+        - item3:        
+            - subitem1 
+            - subitem2
+        - item4:
+            - subitem3
+            - subitem4
+
+    - name: Access subitem1
+      debug:
+        msg: "{{ my_list[2]['subitem1'] }}"
+
+
+
+        
+# ============================================
+# Created by: Gaurav Bharane
+# ============================================
