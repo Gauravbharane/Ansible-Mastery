@@ -26,30 +26,33 @@
 # - `when: my_var > 5 and my_var < 15` (Checks if `my_var` is between 5 and 15)
 # - `when: my_item in my_list` (Checks if `my_item` exists in `my_list`)
 # - `when: my_var is not none` (Checks if `my_var` is not None)
+           my_var: 2
+            my_var  is not  none   #true 
+
 
 
 
 # Example Playbook with 'when' Conditions
-- name: Ansible 'when' Statement Examples
-  hosts: localhost
-  gather_facts: yes
-  tasks:
+# - name: Ansible 'when' Statement Examples
+#   hosts: localhost
+#   gather_facts: yes
+#   tasks:
 
-    # Example 1: Basic 'when' syntax
-    - name: Run task only if condition is met
-      debug:
-        msg: "This task runs because the condition is met"
-      vars:
-        some_condition: true
-      when: some_condition
+#     # Example 1: Basic 'when' syntax # tasks 1
+# - name: Run task only if condition is met
+#   debug:
+#     msg: "This task runs because the condition is met"
+#   vars:
+#         some_condition: true    #boolean variable
+#   when: some_condition   #true
 
-    # Example 2: Using 'when' with a variable
-    - name: Run task only if variable is true
-      debug:
-        msg: "This task runs because my_var is true"
-      vars:
-        my_var: true
-      when: my_var
+#     # Example 2: Using 'when' with a variable
+# - name: Run task only if variable is true
+#   debug:
+#     msg: "This task runs because my_var is true"
+#   vars:
+#     my_var: true
+#   when: my_var
       #explanation
       #The when clause evaluates the condition provided. In this case, it checks the value of my_var. Since my_var is a boolean, it directly evaluates to true or false.
       #If my_var is true, the task will run.
@@ -66,25 +69,46 @@
 
     # Example 3: Using 'when' with comparison operators
     - name: Run task if variable equals a specific value
+      vars:
+        my_var: 20
+      when: my_var == 42   #true / 1 #boolean value 
       debug:
         msg: "This task runs because my_var equals 42"
-      vars:
-        my_var: 42
-      when: my_var == 42
+
+if my_var == 42:
+    print("This task runs because my_var equals 42")
+
+
+
+
+
 
     - name: Run task if variable is greater than a value
       debug:
         msg: "This task runs because my_var is greater than 10"
       vars:
-        my_var: 15
-      when: my_var > 10
+        my_var: 9
+      when: hosts == servera   #false
+
+
+
+
+
+
+
+
 
     - name: Run task if variable is less than or equal to a value
       debug:
         msg: "This task runs because my_var is less than or equal to 20"
       vars:
         my_var: 20
-      when: my_var <= 20
+      when: my_vda <= 1GB
+
+
+#lvol = 1.5 gb 
+#disk = vdb = 1gb  
+
 
     # Example 4: Using 'when' with logical operators
     - name: Run task if both conditions are true
@@ -92,8 +116,12 @@
         msg: "Both conditions are true"
       vars:
         condition1: true
-        condition2: true
+        condition2: false
       when: condition1 and condition2
+
+
+
+
 
     - name: Run task if at least one condition is true
       debug:
@@ -103,21 +131,32 @@
         condition2: true
       when: condition1 or condition2
 
+
+
+
+
     - name: Run task if condition is false
       debug:
         msg: "Condition is false"
       vars:
         condition: false
-      when: not condition
+      when: not condition   #false    
+
+
+
 
     # Example 5: Using 'when' with membership operators
     - name: Run task if item is in list
       debug:
         msg: "Item is in the list"
       vars:
-        my_list: [1, 2, 3]
+        my_list: [1, 2, 3]    #dictionary #lists #sets
         my_item: 2
       when: my_item in my_list
+
+  
+
+
       #explanation
       #The 'when' statement checks if the value of 'my_item' 
       #is present in the list 'my_list'. If the condition is true, 
@@ -155,6 +194,10 @@
         msg: "This task runs on Ubuntu"
       when: ansible_facts['os_family'] == "Debian"
 
+
+
+
+
     # Example 8: Using 'when' with registered variables
     - name: Run task based on registered variable
       shell: "echo 'Hello, World!'"
@@ -163,3 +206,107 @@
       debug:
         msg: "Command succeeded"
       when: result.rc == 0
+
+
+#
+# Example 9: Upgrade RHEL from 8.5 to 9.0
+- name: Check current RHEL version
+ # - name: Ensure RHEL 9.0 repositories are enabled
+  ansible.builtin.yum:
+      name: "*"
+      releasever: "9.0"
+      state: latest
+  when: ansible_facts['distribution'] == "RedHat" and ansible_facts['distribution_version'] == "8.5"
+
+
+
+- name: Verify RHEL version after upgrade
+  ansible.builtin.debug:
+    msg: "RHEL version upgraded to 9.0"
+
+
+
+# ubuntu
+
+- name: Upgrade Ubuntu from 20.04 to 22.04
+  apt:
+    upgrade: dist
+  when: ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_version'] == "20.04"
+
+- name: Verify Ubuntu version after upgrade
+  ansible.builtin.debug:
+    msg: "Ubuntu version upgraded to 22.04"
+
+
+
+
+
+# Example 10: Using 'when' with multiple conditions
+when: ansible_facts['distribution'] == "RedHat" or ansible_facts['distribution'] == "Fedora"
+
+
+
+
+
+# Example 11: Using 'when' with a list of supported distributions
+---
+
+- name: Demonstrate the "in" keyword
+  hosts: all
+  gather_facts: true
+  vars:
+    supported_distros:
+      - RedHat
+      - Fedora
+  tasks:
+    - name: Install httpd using dnf, where supported
+      ansible.builtin.dnf:
+        name: http
+        state: present
+      when: ansible_facts['distribution'] in supported_distros
+
+#
+#gather facts only when the condition is met
+- name: Gather facts for specific servers
+  hosts: all
+  gather_facts: no 
+
+  tasks:
+    - name: Gather facts only for servera
+      setup:
+      when: inventory_hostname == 'servera'   true
+
+    - name: Print the hostname
+      ansible.builtin.debug:
+        msg: "The hostname is {{ ansible_facts['hostname'] }}"
+
+
+ somesh = 10
+ dhruv = 10
+
+ somesh says 10rs
+ dhruv says = null 
+
+
+
+
+#
+- name: Gather facts for specific servers
+  hosts: all
+  gather_facts: no  # Disable automatic fact gathering
+
+  tasks:
+    - name: Gather facts for servera and serverc
+      ansible.builtin.setup:
+      when: inventory_hostname in ['servera', 'serverc']
+
+
+#    inventory hostname in this set is servera & serverc
+
+   
+#
+# servera yes
+# serverb no
+# serverc yes
+# serverd no
+# workstation yes 

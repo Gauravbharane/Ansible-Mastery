@@ -76,30 +76,51 @@
 # File module
 - name: Create a file
   ansible.builtin.file:
-    path: /tmp/example.txt
+    path: /home/student/{{ item }}.txt
     state: touch
+
+
+
 
 # Copy module
 - name: Copy a file
   ansible.builtin.copy:
-    src: /path/to/source/file
+    content: "{{ item }}"
     dest: /path/to/destination/file
+
+
+
+
+
 
 # Command module
 - name: Run a command
   ansible.builtin.command:
     cmd: echo "Hello, World!"
 
+
+
+
+    
+
 # Shell module
 - name: Run a shell command
   ansible.builtin.shell:
     cmd: "ls -l /tmp"
+
+
+
 
 # Yum module (for package management)
 - name: Install a package
   ansible.builtin.yum:
     name: httpd
     state: present
+    
+
+
+
+
 
 # Apt module (for package management)
 - name: Install a package
@@ -352,9 +373,14 @@
     msg: "This is a verbose debug message"
     verbosity: 2
 
+
+
+
 # Ping module
 - name: Test connectivity to hosts
-  ansible.builtin.ping:
+  ping:
+
+
 
 # Setup module
 - name: Gather facts about remote hosts

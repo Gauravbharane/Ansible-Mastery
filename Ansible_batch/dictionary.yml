@@ -9,9 +9,9 @@
 
 # Example:
 my_dict:
-  user: value1
-  key2: value2
-  key3:
+  user: value1      #0
+  key2: value2      #1
+  key3:             #2
     subkey1: subvalue1
     subkey2: subvalue2
 
@@ -19,6 +19,8 @@ my_dict:
 - name: Access subvalue1
   ansible.builtin.debug:
     msg: "{{ my_dict['key3']['subkey1'] }}"
+
+    # a [2][0];
 
 # Iterating over all key-value pairs in the dictionary
 - name: Print all values

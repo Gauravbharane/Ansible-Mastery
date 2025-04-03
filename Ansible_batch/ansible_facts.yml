@@ -1,0 +1,156 @@
+# Commonly Used Facts
+# Here are some commonly used facts:
+
+# ansible_hostname: The hostname of the managed node.
+# ansible_distribution: The operating system distribution (e.g., Ubuntu, CentOS).
+# ansible_distribution_version: The version of the operating system.
+# ansible_ip_addresses: A list of IP addresses assigned to the host.
+# ansible_memory_mb: Memory details in MB.
+# ansible_processor: Information about the CPU.
+# ansible_os_family: The OS family (e.g., RedHat, Debian).
+# ansible_userspace: The userspace of the system (e.g., Linux).
+
+
+# # Example Playbook to Dump All Facts
+# # This playbook demonstrates how to gather and display all facts about the managed nodes.
+- name: Fact dump
+  hosts: all
+  tasks:
+    - name: Print all facts
+      ansible.builtin.debug:
+        var: ansible_facts
+
+
+# # Example Playbook to Use Facts in a Task
+---
+- hosts: all
+  tasks:
+  - name: Prints various Ansible facts
+    ansible.builtin.debug:
+      msg: >
+        The default IPv4 address of {{ ansible_facts.fqdn }}
+        is {{ ansible_facts.default_ipv4.address }}
+
+
+# Before Ansible 2.5, 
+# facts were always injected as individual variables prefixed with the 
+# string ansible_ instead of being part of the ansible_facts variable. 
+# For example, the ansible_facts['distribution'] 
+# fact was called ansible_distribution.
+
+
+#  Square Brackets []
+# Square brackets are used to access dictionary keys. 
+#For example:
+# Here, ansible_facts is a dictionary, 
+# and ['fqdn'] 
+# accesses the value associated with the key 'fqdn'.
+# This is useful when the key is a string and may contain special characters, spaces, or is dynamically generated.
+
+# 2. Dot Notation .
+# Dot notation is a shorthand for 
+# accessing attributes or dictionary keys
+# For example:
+#  Here, default_ipv4 and address 
+# are keys in the ansible_facts dictionary.
+
+---
+- hosts: all
+  tasks:
+  - name: Prints various Ansible facts
+    ansible.builtin.debug:
+      msg: The default IPv4 address of {{ ansible_facts['fqdn'] }} 
+            {{ ansible_facts['hostname'] }}
+            {{ ansible_facts.}}
+        
+        # is {{ ansible_facts['default_ipv4']['address'] }}
+
+ansible_facts{
+  default_ipv4:
+        address:
+        subnet:
+        gateway:
+  }
+  # The ansible_facts variable is a dictionary that contains all the facts gathered by Ansible.
+  ansible.default_ipv4.address
+
+
+#------------------
+# Custom Facts
+# You can define your own custom facts by 
+# creating JSON or INI files in the 
+# /etc/ansible/facts.d/ directory 
+# on the managed nodes. For example:
+# Create a file /etc/ansible/facts.d/custom.fact 
+# with the following content:
+
+# [custom]
+# key1=value1
+# key2=value2
+
+
+# Access these custom facts in your playbook:
+- name: Use custom facts
+  hosts: all
+  tasks:
+    - name: Print custom fact
+      debug:
+        msg: "Custom fact key1 is {{ ansible_local.custom.key1 }}"
+
+
+
+#------------------
+# Example Playbook to Use Facts injected
+---
+- name: Display the hostname
+  hosts: all
+  tasks:
+    - name: Print the hostname
+      debug:
+        msg: "The hostname is {{ ansible_hostname }}"
+
+
+
+
+
+
+
+
+
+
+# 
+# Ansible, the register keyword is used to 
+# capture the output of a task and store it in a variable. 
+# This variable can then be used in subsequent tasks for 
+# conditional logic, debugging, or further processing.
+
+- name: Capture the output of a command
+  hosts: all
+  tasks:
+    - name: Run a shell command
+      ansible.builtin.command: uname -r
+      register: kernel_version
+
+    - name: Display the captured output
+      ansible.builtin.debug:
+        msg: "The kernel version is {{ kernel_version.stdout }}"
+
+
+
+
+# my_dict:
+#   user: value1      #0
+#   key2: value2      #1
+#   key3:             #2
+#     subkey1: subvalue1
+#     subkey2: subvalue2
+
+
+
+
+- name: group of facts
+  hosts: all
+  tasks:
+  
+    - setup:
+      when: inventory_hostname in groups['dev']

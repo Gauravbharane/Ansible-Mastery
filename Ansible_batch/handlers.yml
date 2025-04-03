@@ -1,0 +1,174 @@
+# Handlers in Ansible are used to perform actions that 
+#should only occur when a task changes the state of the system.
+# This file demonstrates various examples of using handlers 
+#in Ansible playbooks.
+
+
+#idempotent = denoting an element of a set which is 
+#unchanged in value when multiplied or otherwise operated on by itself.
+
+# Handlers are typically used for tasks like restarting services, reloading configurations, or notifying other systems.
+# Handlers are a special type of task in Ansible that are only executed when notified by another task.
+# They are useful for performing actions that should only occur when a task changes the state of the system,
+# such as restarting a service or reloading a configuration file.
+
+
+
+
+# Example 1: Install Nginx and print a success message
+---
+- name: Install Nginx and print message on success
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+      notify: Print success message
+
+  handlers:
+    - name: Print success message
+      debug:
+        msg: "Nginx was installed successfully!"
+
+
+
+
+# Explanation:
+# If the Nginx installation task results in a change (e.g., Nginx was not previously installed), 
+# the handler "Print success message" is triggered to print a success message.
+
+# Example 2: Deploy a website
+---
+- name: Deploy a website
+  hosts: managed_nodes
+  become: yes
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+      notify: Restart httpd
+
+    - name: Copy website files
+      copy:
+        src: /path/to/local/website/files/
+        dest: /var/www/html/
+
+    - name: Ensure httpd is running
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Configure firewall for HTTP service
+      firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+  handlers:
+    - name: Restart httpd
+      service:
+        name: httpd
+        state: restarted
+
+# Explanation:
+# The handler "Restart httpd" is triggered only if the "Install httpd" task results in a change.
+
+# Example 3: Manage file and send alert on change
+---
+- name: Manage file and send alert on change
+  hosts: localhost
+  tasks:
+    - name: Create or modify a file
+      copy:
+        content: "This is a sample file content."
+        dest: /tmp/sample_file.txt
+      notify: File changed alert
+
+  handlers:
+    - name: File changed alert
+      debug:
+        msg: "Alert: The file /tmp/sample_file.txt was created or modified!"
+
+# Explanation:
+# The handler "File changed alert" is triggered if the file is created or modified.
+
+# Example 4: Configure system tuning with Tuned
+---
+- name: Configure system tuning with Tuned
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Install Tuned
+      yum:
+        name: tuned
+        state: present
+      notify: Apply Tuned profile
+
+    - name: Enable and start Tuned service
+      service:
+        name: tuned
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Apply Tuned profile
+      command: tuned-adm profile virtual-guest
+
+# Explanation:
+# The handler "Apply Tuned profile" is triggered if the "Install Tuned" task results in a change.
+
+# Example 5: Manage user accounts
+---
+- name: Manage user accounts
+  hosts: localhost
+  become: yes
+  vars:
+    example_user: "harry"
+  tasks:
+    - name: Create a new user
+      user:
+        name: "{{ example_user }}"
+        password: "{{ 'password' | password_hash('sha512') }}"
+        groups: users
+      notify:
+        - Send welcome message
+        - Update MOTD
+
+  handlers:
+    - name: Send welcome message
+      debug:
+        msg: "A new user '{{ example_user }}' has been successfully created!"
+
+    - name: Update MOTD
+      lineinfile:
+        path: /etc/motd
+        line: "Welcome {{ example_user }} to the system!"
+        create: yes
+
+# Explanation:
+# The handlers "Send welcome message" and "Update MOTD" are triggered if the user creation task results in a change.
+
+
+
+#content vs lineinfile
+# The `content` parameter in the `copy` module is used to specify the content of a file directly within the playbook.
+# It allows you to define the entire content of the file as a string, which is then written to the specified destination file. This is useful for creating or replacing files with specific content.
+#
+# Example:
+# - name: Create a file with specific content
+#   copy:
+#     content: "This is the content of the file."
+#     dest: /path/to/destination/file.txt
+# lineinfile:
+# The `lineinfile` module is used to manage lines in a file. It allows you to add, modify, or remove specific lines in a file based on patterns or conditions. This is useful for updating configuration files or ensuring that certain lines exist or do not exist in a file.  
+
+- name: deploy 
+  hosts: host
+  become: yes
+  tasks:
+    - name: 

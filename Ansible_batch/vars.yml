@@ -78,6 +78,20 @@
       loop: "{{ fruits }}"
 
 
+---
+- name: Example playbook for loop variables
+  hosts: all
+  vars:
+    user_names:
+      - apple
+      - banana
+      - orange
+  tasks:
+    - name: Print fruits
+      user:
+        name: "{{ item }}"
+      loop: "{{ users_names }}"
+
 
 
 #example 5 of inventory host vars
