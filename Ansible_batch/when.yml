@@ -170,7 +170,7 @@ if my_var == 42:
         msg: "Item is not in the list"
       vars:
         my_list: [1, 2, 3]
-        my_item: 4
+        my_key: HTTP://something.google.com
       when: my_item not in my_list
 
     # Example 6: Using 'when' with identity operators
