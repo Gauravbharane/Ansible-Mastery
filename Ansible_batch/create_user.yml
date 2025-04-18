@@ -1,0 +1,35 @@
+---
+- name: User Creation playbook
+  hosts: dev, test
+  vars_files:
+    - user_list.yml
+    - vault.yml
+  tasks:
+    - group:
+        name: devops
+        state: present
+    - user:
+        name: "{{ item.name }}"
+        groups: devops
+        password: "{{ dev_pass | password_hash('sha512') }}"
+      when: item.job == "developer"
+      loop: "{{ user }}"
+
+
+- name: User Creation playbook
+  hosts: prod
+  vars_files:
+    - user_list.yml
+    - vault.yml
+  tasks:
+    - group:
+        name: opsmgr
+        state: present
+    - user:
+        name: "{{ item.name }}"
+        groups: opsmgr
+        password: "{{ mgr_pass | password_hash('sha512') }}"
+      when: item.job== "manager"
+      loop: "{{ user }}"
+
+

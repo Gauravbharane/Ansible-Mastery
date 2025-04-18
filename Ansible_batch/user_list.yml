@@ -1,0 +1,7 @@
+- user:
+    - name: harry
+      job: developer
+    - name: natasha
+      job: manager
+    - name: sarah
+      job: manager
