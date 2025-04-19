@@ -1,0 +1,11 @@
+- name: Simple Jinja2 Template Example
+  hosts: localhost
+  vars:
+    user_name: Gaurav
+    company: MIT
+    department: Red Hat Academy
+  tasks:
+    - name: Generate welcome message
+      template:
+        src: welcome_message.j2
+        dest: /tmp/welcome.txt
