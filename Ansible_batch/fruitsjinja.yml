@@ -1,0 +1,13 @@
+- name: Jinja2 Loop Example
+  hosts: localhost
+  vars:
+    fruits:
+      - Apple
+      - Banana
+      - Mango
+  tasks:
+    - name: Generate fruit list
+      template:
+        src: fruits.j2
+        dest: /tmp/fruits.txt
+
