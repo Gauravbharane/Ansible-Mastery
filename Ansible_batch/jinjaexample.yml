@@ -7,5 +7,5 @@
   tasks:
     - name: Generate welcome message
       template:
-        src: welcome_message.j2
+        src: welcome.j2
         dest: /tmp/welcome.txt
