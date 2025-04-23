@@ -1,0 +1,5 @@
+---
+- name: my first role
+  hosts: all
+  roles:
+    - rhce_role
