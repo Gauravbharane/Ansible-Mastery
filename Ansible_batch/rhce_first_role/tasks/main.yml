@@ -1,0 +1,6 @@
+---
+# tasks file for rhce_role
+
+- name: Role first task
+  debug:
+    msg: "Hello {{ student }} we are learning roles"
